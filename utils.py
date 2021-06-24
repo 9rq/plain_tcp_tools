@@ -36,7 +36,7 @@ class Socket_separate:
         return msg.decode()
 
 
-# recommended socket
+# recommending socket
 class Socket_Sign:
     def __init__(self, sock=None, digit=4):
         '''
