@@ -7,12 +7,12 @@ bind_ip = socket.gethostname()
 bind_port = 7777
 
 def handle_client(client_socket):
-    client_socket = Socket_separate(sock=client_socket)
+    client_socket = Socket_Sign(sock=client_socket)
     try:
-        msg = client_socket.recv(1024)
+        msg = client_socket.recv()
         print(msg)
         client_socket.send('ACK, SYN')
-        msg = client_socket.recv(1024)
+        msg = client_socket.recv()
         print(msg)
 
     finally:

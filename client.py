@@ -6,10 +6,10 @@ port = 7777
 
 def main():
     try:
-        sock = Socket_separate()
+        sock = Socket_Sign()
         sock.connect((host,port))
         sock.send('SYN'*10)
-        msg = sock.recv(4096)
+        msg = sock.recv()
         print(msg)
         sock.send('ACK')
     finally:
