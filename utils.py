@@ -1,6 +1,7 @@
 import socket
 
 
+# legacy socket implementation
 class Socket_separate:
     def __init__(self, sock=None):
         self.sock = sock or socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -35,6 +36,7 @@ class Socket_separate:
         return msg.decode()
 
 
+# recommended socket
 class Socket_Sign:
     def __init__(self, sock=None, digit=4):
         '''
@@ -67,7 +69,7 @@ class Socket_Sign:
                 raise RuntimeError('[!] socket connection broken')
             totalsent += sent
 
-    def recv(self, buff_size:int)->str:
+    def recv(self)->str:
         msg_len = self.bytes2int(self.__recv(self.digit))
         msg = self.__recv(msg_len).decode()
         return msg
