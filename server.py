@@ -12,7 +12,7 @@ def main():
     args = parser.parse_args()
 
     server = Server(args.target, args.port)
-    server.run()
+    server.run(socket_wrapper=Socket_Sign)
 
 
 if __name__ == '__main__':
