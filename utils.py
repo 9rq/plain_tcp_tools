@@ -2,7 +2,7 @@ import socket
 import threading
 
 
-# legacy socket wrapper implementation
+# legacy socket wrapper implementation class Socket_separate:
 class Socket_separate:
     def __init__(self, sock=None):
         self.sock = sock or socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -101,23 +101,25 @@ class Server():
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((bind_ip, bind_port))
 
-    def run(self, handler=None):
-        handler = handler or self.default_handler
+    def run(self, **kwargs):
+        handler = kwargs.get('handler') or self.default_handler
 
         self.server.listen(5)
         try:
             while 1:
                 client, addr = self.server.accept()
+                print('[==>] Recieved incoming connection from %s:%d' % (addr[0], addr[1]))
                 # wrap
-                client = Socket_Sign(sock = client)
-                client_handler = threading.Thread(target=handler, args=(client,))
+                client_handler = threading.Thread(target=handler,args=(client, ),kwargs=kwargs)
                 client_handler.start()
         except KeyboardInterrupt:
             print('\r',end='')
         finally:
             self.server.close()
 
-    def default_handler(self, client_socket):
+    def default_handler(self, client_socket, **kwargs):
+        if kwargs.get('socket_wrapper'):
+            client_socket = kwargs.get('socket_wrapper')(sock = client_socket)
         try:
             msg = client_socket.recv()
             print(msg)
