@@ -1,38 +1,21 @@
+import argparse
 import socket
-import threading
 from utils import *
 
 
 bind_ip = socket.gethostname()
 bind_port = 7777
 
-def handle_client(client_socket):
-    client_socket = Socket_Sign(sock=client_socket)
-    try:
-        msg = client_socket.recv()
-        print(msg)
-        client_socket.send('ACK, SYN')
-        msg = client_socket.recv()
-        print(msg)
-
-    finally:
-        client_socket.close()
-
+usage = 'server.py -t bind_ip -p port'
 
 def main():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((bind_ip, bind_port))
-    server.listen(5)
+    parser = argparse.ArgumentParser(description=usage)
+    parser.add_argument('--port', '-p', type=int, default=7777)
+    parser.add_argument('--target', '-t')
+    args = parser.parse_args()
 
-    try:
-        while 1:
-            client, addr = server.accept()
-            client_handler = threading.Thread(target=handle_client, args=(client,))
-            client_handler.start()
-    except KeyboardInterrupt:
-        print('\r',end='')
-    finally:
-        server.close()
+    server = Server(args.target, args.port)
+    server.run()
 
 
 if __name__ == '__main__':
