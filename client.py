@@ -1,14 +1,12 @@
 import argparse
+import socket
 from utils import *
 
 
-host = socket.gethostname()
-port = 7777
-
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--target', '-t', required=True)
-    parser.add_argument('--port', '-p', type=int, required=True)
+    parser.add_argument('--target', '-t', default=socket.gethostname())
+    parser.add_argument('--port', '-p', type=int, default=7777)
     args = parser.parse_args()
 
     try:
