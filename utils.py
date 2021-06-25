@@ -1,7 +1,8 @@
 import socket
+import threading
 
 
-# legacy socket implementation
+# legacy socket wrapper implementation
 class Socket_separate:
     def __init__(self, sock=None):
         self.sock = sock or socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,7 +37,7 @@ class Socket_separate:
         return msg.decode()
 
 
-# recommending socket
+# recommending socket wrapper
 class Socket_Sign:
     def __init__(self, sock=None, digit=4):
         '''
@@ -91,3 +92,38 @@ class Socket_Sign:
 
     def bytes2int(self, num:bytes):
         return int.from_bytes(num, 'big')
+
+
+class Server():
+    def __init__(self, bind_ip, bind_port):
+        bind_ip = bind_ip or socket.gethostname()
+
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind((bind_ip, bind_port))
+
+    def run(self, handler=None):
+        handler = handler or self.default_handler
+
+        self.server.listen(5)
+        try:
+            while 1:
+                client, addr = self.server.accept()
+                # wrap
+                client = Socket_Sign(sock = client)
+                client_handler = threading.Thread(target=handler, args=(client,))
+                client_handler.start()
+        except KeyboardInterrupt:
+            print('\r',end='')
+        finally:
+            self.server.close()
+
+    def default_handler(self, client_socket):
+        try:
+            msg = client_socket.recv()
+            print(msg)
+            client_socket.send('ACK, SYN')
+            msg = client_socket.recv()
+            print(msg)
+
+        finally:
+            client_socket.close()
