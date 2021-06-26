@@ -93,22 +93,33 @@ class Socket_Sign:
     def bytes2int(self, num:bytes):
         return int.from_bytes(num, 'big')
 
+    def __getattr__(self,name):
+        return object.__getattribute__(self.sock, name)
+
 
 class Server():
     def __init__(self, bind_ip, bind_port):
-        bind_ip = bind_ip or socket.gethostname()
+        self.bind_ip = bind_ip or socket.gethostname()
+        self.bind_port = bind_port
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((bind_ip, bind_port))
+        try:
+            self.server.bind((self.bind_ip, self.bind_port))
+        except:
+            print('[!!] Failed to listen on %s:%d' % (self.bind_ip,self.bind_port))
+            print('[!!] Check for other listening sockets or correct permissions')
+            exit()
+
 
     def run(self, **kwargs):
         handler = kwargs.get('handler') or self.default_handler
+        print('[*] Listening on %s:%d' % (self.bind_ip, self.bind_port))
 
         self.server.listen(5)
         try:
             while 1:
                 client, addr = self.server.accept()
-                print('[==>] Recieved incoming connection from %s:%d' % (addr[0], addr[1]))
+                print('[*] Recieved incoming connection from %s:%d' % (addr[0], addr[1]))
                 # wrap
                 client_handler = threading.Thread(target=handler,args=(client, ),kwargs=kwargs)
                 client_handler.start()
