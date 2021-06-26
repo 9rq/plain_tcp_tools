@@ -20,6 +20,9 @@ def proxy_handler(client_socket, **kwargs):
     upstream.start()
     downstream.start()
 
+    upstream.daemon = True
+    downstream.daemon = True
+
     upstream.join()
     downstream.join()
     print('[*] Closed both connections.')

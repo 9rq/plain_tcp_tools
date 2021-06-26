@@ -123,6 +123,7 @@ class Server():
                 # wrap
                 client_handler = threading.Thread(target=handler,args=(client, ),kwargs=kwargs)
                 client_handler.start()
+                client_handler.daemon = True
         except KeyboardInterrupt:
             print('\r',end='')
         finally:
