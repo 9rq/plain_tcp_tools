@@ -23,8 +23,6 @@ def proxy_handler(client_socket, **kwargs):
     upstream.daemon = True
     downstream.daemon = True
 
-    upstream.join()
-    downstream.join()
     print('[*] Closed both connections.')
 
 def local2remote(local_socket, remote_socket):
